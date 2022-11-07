@@ -1,0 +1,23 @@
+.modal-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: absolute;
+    background-color: white;
+    width: 60%;
+    height: 70%;
+}
+
+.modal-move {
+    cursor: move;
+}
+
+.modal-resize-w {
+    cursor: w-resize;
+}
