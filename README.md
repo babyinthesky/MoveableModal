@@ -1,5 +1,8 @@
 
 
+[![Link to the demo video](<img width="932" alt="Screenshot 2022-11-08 at 15 50 23" src="https://user-images.githubusercontent.com/19184124/200582001-3cec0702-6341-43e3-af2b-a071b5834bda.png">)](https://www.youtube.com/watch?v=EpFYkue6HvE)
+
+
 ### `yarn start`
 
 Runs the app in the development mode.\
