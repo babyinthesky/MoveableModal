@@ -43,7 +43,11 @@ code {
     flex-direction: column;
 }
 
-.right {
+.justify-space-between {
+    justify-content: space-between;
+}
+
+.justify-right {
     display: flex;
     justify-content: right;
 }
