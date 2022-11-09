@@ -8,8 +8,7 @@ Can be easily setup to any React project.
 
 Maybe a npm package in near future.
 
-[<img width="932" alt="Screenshot 2022-11-08 at 15 50 23" src="https://user-images.githubusercontent.com/19184124/200582001-3cec0702-6341-43e3-af2b-a071b5834bda.png">](https://www.youtube.com/watch?v=EpFYkue6HvE)
-
+![movableModalLarge](https://user-images.githubusercontent.com/19184124/200760635-8ca08815-4814-4c91-b12f-a597f2ccf9e1.gif)
 
 ### `yarn start`
 
