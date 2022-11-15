@@ -1,17 +1,14 @@
-import React, { SyntheticEvent, useRef, useState } from 'react';
-import CloseButton from './CloseButton';
-
-type ModalSizeType = {
-    width: string | number;
-    height: string | number;
-}
-
-type ActionType = 'Move' | 'ResizeNorth' | 'ResizeNW' | 'ResizeNE' 
-    | 'ResizeWest' | 'ResizeEast' | 'ResizeSW' 
-    | 'ResizeSouth' | 'ResizeSE' | null;
-
-const MODAL_MIN_WIDTH = 100;
-const MODAL_MIN_HEIGHT = 50;
+import React, {
+    useRef,
+    useState,
+    useCallback,
+    MouseEvent,
+    CSSProperties,
+    ReactElement,
+} from 'react';
+import {MODAL_MIN_WIDTH, MODAL_MIN_HEIGHT} from '../conf';
+import { ModalSizeType, ActionType, ModalPositionType } from '../types';
+import ModalBody from './ModalContent';
 
 const Modal = ({
     children,
@@ -20,29 +17,28 @@ const Modal = ({
     header,
     onClose,
 } : {
-    children?: null | React.ReactElement;
     isOpen: boolean;
+    children?: null | ReactElement;
     customStyles?: {
-        content?: React.CSSProperties;
-        overlay?: React.CSSProperties;
-        header?: React.CSSProperties;
+        content?: CSSProperties;
+        overlay?: CSSProperties;
+        header?: CSSProperties;
+        body?: CSSProperties;
     }
-    header?: null | React.ReactElement;
+    header?: null | ReactElement;
     onClose: () => void;
 }) => {
     const modalRef = useRef<HTMLDivElement>(null);
-    const [modalPos, setModalPos] = useState({x: 0, y: 0});
+    const [modalPos, setModalPos] = useState<ModalPositionType>({x: 0, y: 0});
     const [modalSize, setModalSize] = useState<ModalSizeType>({width: '60%', height: '70%'});
     const [action, setAction] = useState<ActionType>(null);
-    const [rightBottomEdge, setRightBottomEdge] = useState({x: 0, y: 0});
+    const [rightBottomEdge, setRightBottomEdge] = useState<ModalPositionType>({x: 0, y: 0});
 
-    if (!isOpen) return null;
-
-    const handleOnMouseUp = () => {
+    const handleOnMouseUp = useCallback(() => {
         setAction(null);
-    }
+    }, [setAction]);
 
-    const handleOnMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleOnMouseMove = useCallback((event: MouseEvent<HTMLDivElement>) => {
         if (action) {
             const moveX = event.movementX;
             const moveY = event.movementY;
@@ -134,76 +130,9 @@ const Modal = ({
                 }
             }
         }
-    }
+    }, [action, modalRef, modalPos, modalSize, rightBottomEdge, setModalPos, setModalSize]);
 
-    const handleModalOnLoad = (event: SyntheticEvent<HTMLDivElement>) => {
-        // Initialize to center when modal opens at the first time
-        if (modalPos.x === 0 && modalPos.y === 0) {
-            const modalWidth = event.currentTarget.offsetWidth;
-            const modalHeight = event.currentTarget.offsetHeight;
-            const overlayWidth = event.currentTarget.parentElement?.offsetWidth;
-            const overlayHeight = event.currentTarget.parentElement?.offsetHeight;
-            if (overlayWidth && overlayHeight) {
-                setModalPos({
-                    x: (overlayWidth - modalWidth) / 2,
-                    y: (overlayHeight - modalHeight) /2,
-                });
-                setModalSize({
-                    width: 0.6 * overlayWidth,
-                    height: 0.7 * overlayHeight,
-                });
-            }
-        }
-    }
-
-    const handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>, actionType: ActionType) => {
-        if (event.button === 0) {
-            const modalWidth = modalRef.current?.offsetWidth;
-            const modalHeight = modalRef.current?.offsetHeight;
-            setAction(actionType);
-            if (modalWidth && modalHeight) {
-                setRightBottomEdge({
-                    x: modalPos.x + modalWidth - MODAL_MIN_WIDTH,
-                    y: modalPos.y + modalHeight - MODAL_MIN_HEIGHT});
-            }
-        }
-    }
-
-    const handleOnMouseDownToMove = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'Move');
-    }
-
-    const handleOnMouseDownToResizeNW = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeNW');
-    }
-
-    const handleOnMouseDownToResizeNorth = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeNorth');
-    }
-
-    const handleOnMouseDownToResizeNE = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeNE');
-    }
-
-    const handleOnMouseDownToResizeWest = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeWest');
-    }
-
-    const handleOnMouseDownToResizeEast = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeEast');
-    }
-
-    const handleOnMouseDownToResizeSW = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeSW');
-    }
-
-    const handleOnMouseDownToResizeSouth = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeSouth');
-    }
-
-    const handleOnMouseDownToResizeSE = (event: React.MouseEvent<HTMLDivElement>) => {
-        handleOnMouseDown(event, 'ResizeSE');
-    }
+    if (!isOpen) return null;
 
     return (
         <div
@@ -212,78 +141,19 @@ const Modal = ({
             onMouseMove={handleOnMouseMove}
             onMouseUp={handleOnMouseUp}
         >
-            <div
-                className="modal-content column"
-                style={{
-                    left: modalPos.x,
-                    top: modalPos.y,
-                    width: modalSize.width,
-                    height: modalSize.height,
-                    ...customStyles?.content,
-                }}
-                ref={modalRef}
-                onLoad={handleModalOnLoad}
-            >
-                <div
-                    className="modal-header"
-                    style={customStyles?.header}
-                >
-                    <div className="row">
-                        <div
-                            className="resize-nw resize-corner"
-                            onMouseDown={handleOnMouseDownToResizeNW}
-                        />
-                        <div
-                            className="resize-n resize-horizon-border"
-                            onMouseDown={handleOnMouseDownToResizeNorth}
-                        />
-                        <div
-                            className="resize-ne resize-corner"
-                            onMouseDown={handleOnMouseDownToResizeNE}
-                        />
-                    </div>
-                    <div
-                        className="modal-move row justify-space-between"
-                        onMouseDown={handleOnMouseDownToMove}
-                    >
-                        <div className="modal-header-title">
-                            {header}
-                        </div>
-                        <CloseButton
-                            onClick={onClose}
-                        />
-                    </div>
-                </div>
-
-                <div className="modal-body row">
-                    <div
-                        className="resize-w resize-vertical-border"
-                        onMouseDown={handleOnMouseDownToResizeWest}
-                    />
-                    <div className="modal-body">
-                        {children}
-                    </div>
-                    <div
-                        className="resize-e resize-vertical-border"
-                        onMouseDown={handleOnMouseDownToResizeEast}
-                    />
-                </div>
-
-                <div className="row">
-                    <div
-                        className="resize-sw resize-corner"
-                        onMouseDown={handleOnMouseDownToResizeSW}
-                    />
-                    <div
-                        className="resize-s resize-horizon-border"
-                        onMouseDown={handleOnMouseDownToResizeSouth}
-                    />
-                    <div
-                        className="resize-se resize-corner"
-                        onMouseDown={handleOnMouseDownToResizeSE}
-                    />
-                </div>
-            </div>
+            <ModalBody
+                modalRef={modalRef}
+                modalPos={modalPos}
+                modalSize={modalSize}
+                setModalPos={setModalPos}
+                setModalSize={setModalSize}
+                setAction={setAction}
+                setRightBottomEdge={setRightBottomEdge}
+                onClose={onClose}
+                children={children}
+                header={header}
+                customStyles={customStyles}
+            />
         </div>
     );
 };
