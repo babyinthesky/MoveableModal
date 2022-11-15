@@ -1,4 +1,14 @@
+# Moveable and resizable modal
 
+Written with React
+
+A modal which you can move around, resize and customise styles.
+
+Can be easily setup to any React project.
+
+Maybe a npm package in near future.
+
+![movableModalLarge](https://user-images.githubusercontent.com/19184124/200760635-8ca08815-4814-4c91-b12f-a597f2ccf9e1.gif)
 
 ### `yarn start`
 
